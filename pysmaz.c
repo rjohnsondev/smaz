@@ -36,6 +36,8 @@
  * PyErr_SetString(PyExc_ValueError, "String too big, cannot compress.");
  */
 
+struct SmazBranch *smaz_trie;
+
 static PyObject *
 compress(PyObject *self, PyObject *args)
 {
@@ -50,7 +52,7 @@ compress(PyObject *self, PyObject *args)
 	int outlen = 4096;
 	char* out = (char*) malloc(outlen);
 	int o;
-	while (outlen + 1 == (o = smaz_compress(pstr, strlen(pstr), out, outlen))) {
+	while (outlen + 1 == (o = smaz_compress_trie(smaz_trie, pstr, strlen(pstr), out, outlen))) {
 		outlen *= 2;
 		out = (char*) realloc(out, outlen);
 	}
@@ -101,5 +103,6 @@ void
 initsmaz(void)
 {
     Py_InitModule3("smaz", module_functions, "A module to compress small strings using smaz.");
+    smaz_trie = smaz_build_trie();
 }
 
